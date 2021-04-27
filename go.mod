@@ -1,0 +1,5 @@
+module com.poalim.bank.hackathon.login-fiber
+
+go 1.14
+
+require github.com/gofiber/fiber/v2 v2.8.0
