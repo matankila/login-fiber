@@ -1,0 +1,185 @@
+basePath: /api
+definitions:
+  model.ErrorResponse:
+    properties:
+      message:
+        type: string
+      ok:
+        type: boolean
+    type: object
+  model.HealthResponse:
+    properties:
+      message:
+        type: string
+      ok:
+        type: boolean
+    type: object
+  model.LoginRequest:
+    properties:
+      account_id:
+        type: string
+      bank_number:
+        type: string
+      password:
+        type: string
+    type: object
+  model.LoginResponse:
+    properties:
+      jwt:
+        type: string
+      message:
+        type: string
+      ok:
+        type: boolean
+    type: object
+  model.RegisterRequest:
+    properties:
+      account_id:
+        type: string
+      bank_number:
+        type: string
+      password:
+        type: string
+    type: object
+  model.RegisterResponse:
+    properties:
+      message:
+        type: string
+      ok:
+        type: boolean
+    type: object
+  model.ValidateResponse:
+    properties:
+      message:
+        type: string
+      ok:
+        type: boolean
+    type: object
+host: localhost:8080
+info:
+  contact:
+    email: fiber@swagger.io
+    name: API Support
+  description: This is a sample swagger for Fiber
+  license:
+    name: Apache 2.0
+    url: http://www.apache.org/licenses/LICENSE-2.0.html
+  termsOfService: http://swagger.io/terms/
+  title: Fiber Example API
+  version: "1.0"
+paths:
+  /health:
+    get:
+      description: health check
+      operationId: health
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/model.HealthResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/model.ErrorResponse'
+      summary: health check
+      tags:
+      - health
+  /v1/login:
+    post:
+      consumes:
+      - application/json
+      description: login to app
+      operationId: login-to-app
+      parameters:
+      - description: login account
+        in: body
+        name: account
+        required: true
+        schema:
+          $ref: '#/definitions/model.LoginRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/model.LoginResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/model.ErrorResponse'
+        "422":
+          description: Unprocessable Entity
+          schema:
+            $ref: '#/definitions/model.ErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/model.ErrorResponse'
+      summary: login to app
+      tags:
+      - Login
+  /v1/register:
+    post:
+      consumes:
+      - application/json
+      description: register to app
+      operationId: register-to-app
+      parameters:
+      - description: register account
+        in: body
+        name: account
+        required: true
+        schema:
+          $ref: '#/definitions/model.RegisterRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/model.RegisterResponse'
+        "409":
+          description: Conflict
+          schema:
+            $ref: '#/definitions/model.ErrorResponse'
+      summary: register to app
+      tags:
+      - Register
+  /v1/validate:
+    get:
+      consumes:
+      - application/json
+      description: validate jwt token
+      operationId: validate-jwt-token
+      parameters:
+      - description: jwt header
+        in: header
+        name: x-jwt-assertion
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/model.ValidateResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/model.ErrorResponse'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/model.ErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/model.ErrorResponse'
+      summary: validate jwt token
+      tags:
+      - Validate
+swagger: "2.0"
