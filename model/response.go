@@ -3,6 +3,7 @@ package model
 type LoginResponse struct {
 	Ok      bool   `json:"ok"`
 	Message string `json:"message"`
+	Jwt     string `json:"jwt"`
 }
 
 type RegisterResponse struct {

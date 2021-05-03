@@ -2,9 +2,10 @@ package api
 
 import (
 	"com.poalim.bank.hackathon.login-fiber/controller"
-	error_lib "com.poalim.bank.hackathon.login-fiber/error"
 	"com.poalim.bank.hackathon.login-fiber/global"
 	"com.poalim.bank.hackathon.login-fiber/model"
+	error_lib "com.poalim.bank.hackathon.login-fiber/model/error"
+	"com.poalim.bank.hackathon.login-fiber/service"
 	"github.com/gofiber/fiber/v2"
 )
 
@@ -19,68 +20,119 @@ type Controller struct {
 
 func InitController() Controller {
 	c := Controller{}
-	c.login = loginController
-	c.register = registerController
-	c.validate = validateController
-	c.health = healthController
+	c.login = LoginController
+	c.register = RegisterController
+	c.validate = ValidateController
+	c.health = HealthController
 	return c
 }
 
-func loginController(c *fiber.Ctx) error {
+// LoginController godoc
+// @Summary login to app
+// @Description login to app
+// @ID login-to-app
+// @Accept  json
+// @Produce  json
+// @Tags Login
+// @Param account body model.LoginRequest true "login account"
+// @Success 200 {object} model.LoginResponse
+// @Failure 422 {object} model.ErrorResponse
+// @Failure 400 {object} model.ErrorResponse
+// @Failure 500 {object} model.ErrorResponse
+// @Router /v1/login [post]
+func LoginController(c *fiber.Ctx) error {
 	request := model.LoginRequest{}
 	if err := c.BodyParser(&request); err != nil {
 		return err
 	}
 
-	response, err := controller.Login(request)
+	err := controller.Login(request)
 	if err != nil {
 		return err
 	}
-	jwt, err := controller.CreateJwt(request)
+	j := service.NewJwtWrapper()
+	jwt, err := j.GenerateToken(request)
 	if err != nil {
 		return err
 	}
-	cookie := fiber.Cookie{
-		Name:  "jwt",
-		Value: jwt,
-	}
-	c.Cookie(&cookie)
-	return c.JSON(response)
+
+	return c.JSON(model.LoginResponse{
+		Ok:      true,
+		Message: global.LOGIN_RESPONSE,
+		Jwt:     jwt,
+	})
 }
 
-func registerController(c *fiber.Ctx) error {
+// RegisterController godoc
+// @Summary register to app
+// @Description register to app
+// @ID register-to-app
+// @Accept  json
+// @Produce  json
+// @Tags Register
+// @Param account body model.RegisterRequest true "register account"
+// @Success 200 {object} model.RegisterResponse
+// @Failure 409 {object} model.ErrorResponse
+// @Router /v1/register [post]
+func RegisterController(c *fiber.Ctx) error {
 	request := model.RegisterRequest{}
 	if err := c.BodyParser(&request); err != nil {
 		return err
 	}
-	//TODO: business logic
-	response, err := controller.Register(request)
-	if err != nil {
+	if err := controller.Register(request); err != nil {
 		return err
 	}
 
-	return c.JSON(response)
+	return c.JSON(model.RegisterResponse{
+		Ok:      true,
+		Message: global.REGISTER_RESPONSE,
+	})
 }
 
-func validateController(c *fiber.Ctx) error {
+// ValidateController godoc
+// @Summary validate jwt token
+// @Description validate jwt token
+// @ID validate-jwt-token
+// @Accept  json
+// @Produce  json
+// @Tags Validate
+// @param x-jwt-assertion header string true "jwt header"
+// @Success 200 {object} model.ValidateResponse
+// @Failure 400 {object} model.ErrorResponse
+// @Failure 500 {object} model.ErrorResponse
+// @Failure 401 {object} model.ErrorResponse
+// @Failure 400 {object} model.ErrorResponse
+// @Router /v1/validate [get]
+func ValidateController(c *fiber.Ctx) error {
 	jwt := ""
 	if jwt = c.Get(global.JWT_HEADER); jwt == "" {
 		return error_lib.NoJwtInRequest
 	}
 
-	response, err := controller.Validate(jwt)
-	if err != nil {
+	if err := controller.Validate(jwt); err != nil {
 		return err
 	}
-
-	return c.JSON(response)
+	return c.JSON(model.ValidateResponse{
+		Ok:      true,
+		Message: global.VALIDATE_RESPONSE,
+	})
 }
 
-func healthController(c *fiber.Ctx) error {
-	response, err := controller.Health()
-	if err != nil {
+// HealthController godoc
+// @Summary health check
+// @Description health check
+// @ID health
+// @Produce  json
+// @Tags health
+// @Success 200 {object} model.HealthResponse
+// @Failure 500 {object} model.ErrorResponse
+// @Router /health [get]
+func HealthController(c *fiber.Ctx) error {
+	if err := controller.Health(); err != nil {
 		return err
 	}
-
-	return c.JSON(response)
+	return c.JSON(model.HealthResponse{
+		Ok:      true,
+		Message: global.HEALTH_RESPONSE,
+	})
 }

@@ -23,4 +23,12 @@ var (
 		Code:    http.StatusBadRequest,
 		Message: global.INCORRECT_PASSWORD,
 	}
+	CouldNotParseClaim = &fiber.Error{
+		Code:    http.StatusInternalServerError,
+		Message: global.COULDNT_PARSE_CLAIM,
+	}
+	ExpiredJwt = &fiber.Error{
+		Code:    http.StatusUnauthorized,
+		Message: global.EXPIRED_JWT,
+	}
 )

@@ -1,8 +1,8 @@
 package dao
 
 import (
-	error_lib "com.poalim.bank.hackathon.login-fiber/error"
 	"com.poalim.bank.hackathon.login-fiber/model"
+	error_lib "com.poalim.bank.hackathon.login-fiber/model/error"
 )
 
 var (

@@ -28,8 +28,8 @@ WORKDIR $GOPATH/src
 COPY . .
 RUN go mod download
 RUN go mod verify
-
-
+RUN go get -u github.com/swaggo/swag/cmd/swag
+RUN swag init -g cmd/main.go
 
 # Build the binary
 RUN CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build \
