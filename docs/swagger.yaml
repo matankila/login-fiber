@@ -55,7 +55,6 @@ definitions:
       ok:
         type: boolean
     type: object
-host: localhost:8080
 info:
   contact:
     email: fiber@swagger.io
