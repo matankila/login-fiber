@@ -2,7 +2,6 @@ package main
 
 import (
 	"com.poalim.bank.hackathon.login-fiber/api"
-	error_lib "com.poalim.bank.hackathon.login-fiber/model/error"
 	"com.poalim.bank.hackathon.login-fiber/service"
 	"github.com/gofiber/fiber/v2"
 
@@ -13,19 +12,18 @@ func init() {
 	service.InitFactory()
 }
 
-// @title Fiber Example API
+// @title Login
 // @version 1.0
-// @description This is a sample swagger for Fiber
+// @description Swagger for Login service
 // @termsOfService http://swagger.io/terms/
 // @contact.name API Support
-// @contact.email fiber@swagger.io
+// @contact.email matan.k1500@gmail.com
 // @license.name Apache 2.0
 // @license.url http://www.apache.org/licenses/LICENSE-2.0.html
 // @host
 // @BasePath /api
 func main() {
-	logger := service.GetLogger(service.Default)
-	app := fiber.New(error_lib.ErrorHandler(logger))
+	app := fiber.New(api.ErrorHandler())
 	c := api.InitController()
 	api.InitApi(app, c)
 	if err := app.Listen(":8080"); err != nil {

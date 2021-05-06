@@ -3,8 +3,8 @@ package api
 import (
 	"com.poalim.bank.hackathon.login-fiber/controller"
 	"com.poalim.bank.hackathon.login-fiber/global"
+	error_lib "com.poalim.bank.hackathon.login-fiber/global/error"
 	"com.poalim.bank.hackathon.login-fiber/model"
-	error_lib "com.poalim.bank.hackathon.login-fiber/model/error"
 	"com.poalim.bank.hackathon.login-fiber/service"
 	"github.com/gofiber/fiber/v2"
 )

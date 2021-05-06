@@ -1,9 +1,9 @@
 package service
 
 import (
+	error_lib "com.poalim.bank.hackathon.login-fiber/global/error"
 	"com.poalim.bank.hackathon.login-fiber/model"
-	error_lib "com.poalim.bank.hackathon.login-fiber/model/error"
-	jwt "github.com/dgrijalva/jwt-go"
+	"github.com/dgrijalva/jwt-go"
 	"time"
 )
 

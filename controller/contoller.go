@@ -2,8 +2,8 @@ package controller
 
 import (
 	"com.poalim.bank.hackathon.login-fiber/dao"
+	error_lib "com.poalim.bank.hackathon.login-fiber/global/error"
 	"com.poalim.bank.hackathon.login-fiber/model"
-	error_lib "com.poalim.bank.hackathon.login-fiber/model/error"
 	"com.poalim.bank.hackathon.login-fiber/service"
 )
 

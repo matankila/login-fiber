@@ -21,7 +21,7 @@ var doc = `{
         "termsOfService": "http://swagger.io/terms/",
         "contact": {
             "name": "API Support",
-            "email": "fiber@swagger.io"
+            "email": "matan.k1500@gmail.com"
         },
         "license": {
             "name": "Apache 2.0",
@@ -310,8 +310,8 @@ var SwaggerInfo = swaggerInfo{
 	Host:        "",
 	BasePath:    "/api",
 	Schemes:     []string{},
-	Title:       "Fiber Example API",
-	Description: "This is a sample swagger for Fiber",
+	Title:       "Login",
+	Description: "Swagger for Login service",
 }
 
 type s struct{}
