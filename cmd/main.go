@@ -17,7 +17,7 @@ func init() {
 // @description Swagger for Login service
 // @termsOfService http://swagger.io/terms/
 // @contact.name API Support
-// @contact.email matan.k1500@gmail.com;kanettitom@gmail.com
+// @contact.email matan.k1500@gmail.com
 // @license.name Apache 2.0
 // @license.url http://www.apache.org/licenses/LICENSE-2.0.html
 // @host
