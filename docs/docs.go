@@ -21,7 +21,7 @@ var doc = `{
         "termsOfService": "http://swagger.io/terms/",
         "contact": {
             "name": "API Support",
-            "email": "matan.k1500@gmail.com"
+            "email": "matan.k1500@gmail.com;kanettitom@gmail.com"
         },
         "license": {
             "name": "Apache 2.0",

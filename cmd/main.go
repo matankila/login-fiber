@@ -17,7 +17,7 @@ func init() {
 // @description Swagger for Login service
 // @termsOfService http://swagger.io/terms/
 // @contact.name API Support
-// @contact.email matan.k1500@gmail.com
+// @contact.email matan.k1500@gmail.com;kanettitom@gmail.com
 // @license.name Apache 2.0
 // @license.url http://www.apache.org/licenses/LICENSE-2.0.html
 // @host
@@ -26,7 +26,7 @@ func main() {
 	app := fiber.New(api.ErrorHandler(service.GetLogger(service.Default)))
 	c := api.InitController()
 	api.InitApi(app, c)
-	if err := app.Listen(":8080"); err != nil {
+	if err := app.Listen(":9090"); err != nil {
 		panic(err)
 	}
 }

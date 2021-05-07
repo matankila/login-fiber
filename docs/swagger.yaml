@@ -57,7 +57,7 @@ definitions:
     type: object
 info:
   contact:
-    email: matan.k1500@gmail.com
+    email: matan.k1500@gmail.com;kanettitom@gmail.com
     name: API Support
   description: Swagger for Login service
   license:
