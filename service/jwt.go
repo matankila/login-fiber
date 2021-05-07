@@ -8,15 +8,15 @@ import (
 )
 
 var (
-	singletonJwtWrapper = &JwtWrapper{
+	singletonJwtWrapper = &jwtWrapper{
 		SecretKey:       "ttlogin",
 		Issuer:          "ttlogin",
 		ExpirationHours: 72,
 	}
 )
 
-// JwtWrapper wraps the signing key and the issuer
-type JwtWrapper struct {
+// jwtWrapper wraps the signing key and the issuer
+type jwtWrapper struct {
 	SecretKey       string
 	Issuer          string
 	ExpirationHours int64
@@ -29,12 +29,12 @@ type JwtClaim struct {
 	jwt.StandardClaims
 }
 
-func NewJwtWrapper() *JwtWrapper {
+func NewJwtWrapper() *jwtWrapper {
 	return singletonJwtWrapper
 }
 
 // GenerateToken generates a jwt token
-func (j *JwtWrapper) GenerateToken(request model.LoginRequest) (signedToken string, err error) {
+func (j *jwtWrapper) GenerateToken(request model.LoginRequest) (signedToken string, err error) {
 	claims := &JwtClaim{
 		BankNumber: request.BankNumber,
 		AccountId:  request.AccountId,
@@ -52,7 +52,7 @@ func (j *JwtWrapper) GenerateToken(request model.LoginRequest) (signedToken stri
 }
 
 //ValidateToken validates the jwt token
-func (j *JwtWrapper) ValidateToken(signedToken string) (claims *JwtClaim, err error) {
+func (j *jwtWrapper) ValidateToken(signedToken string) (claims *JwtClaim, err error) {
 	token, err := jwt.ParseWithClaims(
 		signedToken,
 		&JwtClaim{},
@@ -63,10 +63,7 @@ func (j *JwtWrapper) ValidateToken(signedToken string) (claims *JwtClaim, err er
 	if err != nil {
 		return
 	}
-	claims, ok := token.Claims.(*JwtClaim)
-	if !ok {
-		return nil, error_lib.CouldNotParseClaim
-	}
+	claims, _ = token.Claims.(*JwtClaim)
 	if claims.ExpiresAt < time.Now().Local().Unix() {
 		return nil, error_lib.ExpiredJwt
 	}

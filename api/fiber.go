@@ -27,10 +27,9 @@ func InitApi(f *fiber.App, c Controller) {
 	v1.Get("/validate", c.validate)
 }
 
-func ErrorHandler() fiber.Config {
+func ErrorHandler(logger *zap.Logger) fiber.Config {
 	return fiber.Config{
 		ErrorHandler: func(c *fiber.Ctx, err error) error {
-			logger := service.GetLogger(service.Default)
 			code := fiber.StatusInternalServerError
 
 			if e, ok := err.(*fiber.Error); ok {

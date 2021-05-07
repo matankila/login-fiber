@@ -11,10 +11,10 @@ func NewUuidMid() fiber.Handler {
 	return func(c *fiber.Ctx) error {
 		u := uuid.New()
 		c.Request().Header.Set(fiber.HeaderXRequestID, u.String())
+		c.Set(fiber.HeaderXRequestID, u.String())
 		return c.Next()
 	}
 }
-
 func NewLoggingMid(logger *zap.Logger) fiber.Handler {
 	return func(c *fiber.Ctx) error {
 		req := model.RequestInfo{

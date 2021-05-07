@@ -21,6 +21,7 @@ func GetAccount(account model.AccountData) (string, error) {
 		return v, nil
 	}
 }
+
 func Ping() (bool, error) {
 	return true, nil
 }

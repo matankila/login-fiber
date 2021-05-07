@@ -52,7 +52,6 @@ func Health() error {
 
 func hashPassword(password string) string {
 	return "tom-" + password
-
 }
 
 func loginRequestToAccountData(request model.LoginRequest) model.AccountData {
