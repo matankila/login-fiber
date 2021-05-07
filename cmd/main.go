@@ -26,7 +26,7 @@ func main() {
 	app := fiber.New(api.ErrorHandler(service.GetLogger(service.Default)))
 	c := api.InitController()
 	api.InitApi(app, c)
-	if err := app.Listen(":9090"); err != nil {
+	if err := app.Listen(":8080"); err != nil {
 		panic(err)
 	}
 }
