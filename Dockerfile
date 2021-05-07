@@ -4,6 +4,8 @@ ARG  BUILDER_IMAGE=golang:alpine
 ############################
 FROM ${BUILDER_IMAGE} as builder
 
+RUN apk add --no-cache git make bash
+
 # Install git + SSL ca certificates.
 # Git is required for fetching the dependencies.
 # Ca-certificates is required to call HTTPS endpoints.
@@ -24,6 +26,7 @@ RUN adduser \
     "${USER}"
 
 ENV GO111MODULE=on
+ENV CGO_ENABLED 0
 WORKDIR $GOPATH/src
 COPY . .
 RUN go mod download
@@ -32,9 +35,10 @@ RUN go get -u github.com/swaggo/swag/cmd/swag
 RUN swag init -g cmd/main.go
 
 # Build the binary
-RUN CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build \
-    -ldflags='-w -s -extldflags "-static"' -a \
-    -o /go/bin/main ./cmd/main.go
+RUN make build
+
+# Run Test & return coverage %
+RUN make test
 
 ############################
 # STEP 2 build a small image

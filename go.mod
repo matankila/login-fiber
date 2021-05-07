@@ -13,10 +13,8 @@ require (
 	github.com/klauspost/compress v1.12.2 // indirect
 	github.com/stretchr/testify v1.7.0
 	github.com/swaggo/swag v1.7.0
-	github.com/valyala/bytebufferpool v1.0.0
 	github.com/valyala/fasthttp v1.24.0 // indirect
 	go.uber.org/zap v1.16.0
 	golang.org/x/net v0.0.0-20210503060351-7fd8e65b6420 // indirect
 	golang.org/x/sys v0.0.0-20210503080704-8803ae5d1324 // indirect
-
 )
