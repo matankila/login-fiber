@@ -3,25 +3,95 @@ package dao
 import (
 	error_lib "com.poalim.bank.hackathon.login-fiber/global/error"
 	"com.poalim.bank.hackathon.login-fiber/model"
+	"context"
+	"go.mongodb.org/mongo-driver/bson"
+	"go.mongodb.org/mongo-driver/mongo"
+	"go.mongodb.org/mongo-driver/mongo/options"
+	"go.mongodb.org/mongo-driver/mongo/readpref"
+	"sync"
+	"time"
 )
 
 var (
-	db = map[string]string{}
+	db   = map[string]string{}
+	m    = mongoDB{}
+	done = make(chan struct{})
 )
 
-func SetAccount(account model.AccountData) error {
-	db[account.Id] = account.Password
+type mongoDB struct {
+	Client *mongo.Client
+	sync.Once
+}
+
+type DB interface {
+	Set(interface{}) error
+	Get(interface{}) (interface{}, error)
+	Ping() (bool, error)
+}
+
+func New(uri string) (DB, chan struct{}) {
+	m.Do(func() {
+		ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
+		defer cancel()
+		client, err := mongo.Connect(ctx, options.Client().ApplyURI(uri))
+		if err != nil {
+			panic(err)
+		}
+
+		go func() {
+			<-done
+			if err = client.Disconnect(ctx); err != nil {
+				panic(err)
+			}
+		}()
+
+		m.Client = client
+	})
+
+	return &m, done
+}
+
+func (m *mongoDB) Get(requestObj interface{}) (interface{}, error) {
+	req, ok := requestObj.(model.AccountData)
+	if !ok {
+		return nil, error_lib.UnsupportedType
+	}
+
+	collection := m.Client.Database("login").Collection("users")
+	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+	defer cancel()
+	res := bson.M{}
+	err := collection.FindOne(ctx, bson.M{"_id": req.Id}).Decode(&res)
+	if err != nil {
+		return nil, err
+	}
+
+	return res["password"], nil
+}
+
+func (m *mongoDB) Set(requestObj interface{}) error {
+	req, ok := requestObj.(model.AccountData)
+	if !ok {
+		return error_lib.UnsupportedType
+	}
+
+	collection := m.Client.Database("login").Collection("users")
+	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+	defer cancel()
+	_, err := collection.InsertOne(ctx, req)
+	if err != nil {
+		return err
+	}
+
 	return nil
 }
 
-func GetAccount(account model.AccountData) (string, error) {
-	if v, ok := db[account.Id]; !ok {
-		return "", error_lib.AccountNotExists
-	} else {
-		return v, nil
+func (m *mongoDB) Ping() (bool, error) {
+	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+	defer cancel()
+	if err := m.Client.Ping(ctx, readpref.Primary()); err != nil {
+		return false, err
 	}
-}
 
-func Ping() (bool, error) {
 	return true, nil
 }

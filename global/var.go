@@ -11,4 +11,6 @@ const (
 	EXPIRED_JWT         = "JWT is expired"
 	LOGGER_NAME         = "ttlogin.logger"
 	HEALTH_LOGGER_NAME  = "ttlogin.health.logger"
+	URI                 = "mongodb://fab-db:i1ZvN0F3tDSmQZ0yJKOmInPM47Ji8LGYTep3TuO7FPFmh0uAFBrbEV2hGPtY4uJBFTTCv7z3JHlCSa25Kof1dQ==@fab-db.mongo.cosmos.azure.com:10255/?ssl=true&replicaSet=globaldb&retrywrites=false&maxIdleTimeMS=120000&appName=@fab-db@"
+	UNSUPPORTED_TYPE    = "unsupported type of object"
 )

@@ -31,4 +31,8 @@ var (
 		Code:    http.StatusUnauthorized,
 		Message: global.EXPIRED_JWT,
 	}
+	UnsupportedType = &fiber.Error{
+		Code:    http.StatusUnprocessableEntity,
+		Message: global.UNSUPPORTED_TYPE,
+	}
 )

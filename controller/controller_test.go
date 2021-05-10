@@ -8,8 +8,9 @@ import (
 )
 
 func TestHashPassword(t *testing.T) {
-	res := hashPassword("matan")
-	assert.Equal(t, res, "tom-matan")
+	res, err := hashPassword("matan")
+	assert.Nil(t, err)
+	assert.True(t, CheckPasswordHash("matan", res))
 }
 
 func TestLoginRequestToAccountData(t *testing.T) {
@@ -21,7 +22,6 @@ func TestLoginRequestToAccountData(t *testing.T) {
 
 	res := loginRequestToAccountData(request)
 	assert.Equal(t, res.Id, "1234-1234")
-	assert.Equal(t, res.Password, "tom-1234")
 }
 
 func TestRegisterRequestToAccountData(t *testing.T) {
@@ -31,9 +31,10 @@ func TestRegisterRequestToAccountData(t *testing.T) {
 		Password:   "1234",
 	}
 
-	res := registerRequestToAccountData(request)
+	res, err := registerRequestToAccountData(request)
+	assert.Nil(t, err)
 	assert.Equal(t, res.Id, "1234-1234")
-	assert.Equal(t, res.Password, "tom-1234")
+	assert.True(t, CheckPasswordHash("1234", res.Password))
 }
 
 func TestHealth(t *testing.T) {

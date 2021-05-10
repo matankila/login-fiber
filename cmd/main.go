@@ -2,14 +2,22 @@ package main
 
 import (
 	"com.poalim.bank.hackathon.login-fiber/api"
+	"com.poalim.bank.hackathon.login-fiber/dao"
+	"com.poalim.bank.hackathon.login-fiber/global"
 	"com.poalim.bank.hackathon.login-fiber/service"
 	"github.com/gofiber/fiber/v2"
+	"time"
 
 	_ "com.poalim.bank.hackathon.login-fiber/docs"
 )
 
+var (
+	done chan struct{}
+)
+
 func init() {
 	service.InitFactory()
+	_, done = dao.New(global.URI)
 }
 
 // @title Login
@@ -27,6 +35,8 @@ func main() {
 	c := api.InitController()
 	api.InitApi(app, c)
 	if err := app.Listen(":8080"); err != nil {
+		close(done)
+		time.Sleep(2 * time.Second)
 		panic(err)
 	}
 }
