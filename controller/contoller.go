@@ -11,16 +11,16 @@ import (
 
 func Login(request model.LoginRequest) error {
 	account := loginRequestToAccountData(request)
-
 	c, _ := dao.New(global.URI)
 	encPassword, err := c.Get(account)
-
 	if err != nil {
 		return err
 	}
-	if ok := CheckPasswordHash(account.Password, encPassword.(string)); !ok {
+
+	if ok := checkPasswordHash(account.Password, encPassword.(string)); !ok {
 		return error_lib.IncorrectPassword
 	}
+
 	return nil
 }
 
@@ -38,6 +38,7 @@ func Register(request model.RegisterRequest) error {
 	if err := c.Set(account); err != nil {
 		return err
 	}
+
 	return nil
 }
 
@@ -60,11 +61,11 @@ func Health() error {
 }
 
 func hashPassword(password string) (string, error) {
-	bytes, err := bcrypt.GenerateFromPassword([]byte(password), 14)
+	bytes, err := bcrypt.GenerateFromPassword([]byte(password), 7)
 	return string(bytes), err
 }
 
-func CheckPasswordHash(password, hash string) bool {
+func checkPasswordHash(password, hash string) bool {
 	err := bcrypt.CompareHashAndPassword([]byte(hash), []byte(password))
 	return err == nil
 }

@@ -10,7 +10,7 @@ import (
 func TestHashPassword(t *testing.T) {
 	res, err := hashPassword("matan")
 	assert.Nil(t, err)
-	assert.True(t, CheckPasswordHash("matan", res))
+	assert.True(t, checkPasswordHash("matan", res))
 }
 
 func TestLoginRequestToAccountData(t *testing.T) {
@@ -34,7 +34,7 @@ func TestRegisterRequestToAccountData(t *testing.T) {
 	res, err := registerRequestToAccountData(request)
 	assert.Nil(t, err)
 	assert.Equal(t, res.Id, "1234-1234")
-	assert.True(t, CheckPasswordHash("1234", res.Password))
+	assert.True(t, checkPasswordHash("1234", res.Password))
 }
 
 func TestHealth(t *testing.T) {

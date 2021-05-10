@@ -13,7 +13,6 @@ import (
 )
 
 var (
-	db   = map[string]string{}
 	m    = mongoDB{}
 	done = make(chan struct{})
 )
@@ -31,7 +30,7 @@ type DB interface {
 
 func New(uri string) (DB, chan struct{}) {
 	m.Do(func() {
-		ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
+		ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
 		defer cancel()
 		client, err := mongo.Connect(ctx, options.Client().ApplyURI(uri))
 		if err != nil {
@@ -58,7 +57,7 @@ func (m *mongoDB) Get(requestObj interface{}) (interface{}, error) {
 	}
 
 	collection := m.Client.Database("login").Collection("users")
-	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+	ctx, cancel := context.WithTimeout(context.Background(), 3*time.Second)
 	defer cancel()
 	res := bson.M{}
 	err := collection.FindOne(ctx, bson.M{"_id": req.Id}).Decode(&res)
@@ -76,7 +75,7 @@ func (m *mongoDB) Set(requestObj interface{}) error {
 	}
 
 	collection := m.Client.Database("login").Collection("users")
-	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+	ctx, cancel := context.WithTimeout(context.Background(), 3*time.Second)
 	defer cancel()
 	_, err := collection.InsertOne(ctx, req)
 	if err != nil {
@@ -87,7 +86,7 @@ func (m *mongoDB) Set(requestObj interface{}) error {
 }
 
 func (m *mongoDB) Ping() (bool, error) {
-	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+	ctx, cancel := context.WithTimeout(context.Background(), 3*time.Second)
 	defer cancel()
 	if err := m.Client.Ping(ctx, readpref.Primary()); err != nil {
 		return false, err
