@@ -2,17 +2,26 @@ package controller
 
 import (
 	"com.poalim.bank.hackathon.login-fiber/dao"
-	"com.poalim.bank.hackathon.login-fiber/global"
 	error_lib "com.poalim.bank.hackathon.login-fiber/global/error"
 	"com.poalim.bank.hackathon.login-fiber/model"
 	"com.poalim.bank.hackathon.login-fiber/service"
 	"golang.org/x/crypto/bcrypt"
 )
 
-func Login(request model.LoginRequest) error {
+type Controller struct {
+	db dao.DB
+}
+
+func NewContoller(db dao.DB) Controller {
+	return Controller{
+		db: db,
+	}
+}
+
+func (c Controller) Login(request model.LoginRequest) error {
 	account := loginRequestToAccountData(request)
-	c, _ := dao.New(global.URI)
-	encPassword, err := c.Get(account)
+
+	encPassword, err := c.db.Get(account)
 	if err != nil {
 		return err
 	}
@@ -24,25 +33,24 @@ func Login(request model.LoginRequest) error {
 	return nil
 }
 
-func Register(request model.RegisterRequest) error {
+func (c Controller) Register(request model.RegisterRequest) error {
 	account, err := registerRequestToAccountData(request)
 	if err != nil {
 		return err
 	}
 
-	c, _ := dao.New(global.URI)
-	if _, err := c.Get(account); err == nil {
+	if _, err := c.db.Get(account); err == nil {
 		return error_lib.AccountAlreadyExist
 	}
 
-	if err := c.Set(account); err != nil {
+	if err := c.db.Set(account); err != nil {
 		return err
 	}
 
 	return nil
 }
 
-func Validate(jwt string) error {
+func (c Controller) Validate(jwt string) error {
 	j := service.NewJwtWrapper()
 	_, err := j.ValidateToken(jwt)
 	if err != nil {
@@ -51,9 +59,8 @@ func Validate(jwt string) error {
 	return nil
 }
 
-func Health() error {
-	c, _ := dao.New(global.URI)
-	_, err := c.Ping()
+func (c Controller) Health() error {
+	_, err := c.db.Ping()
 	if err != nil {
 		return err
 	}
@@ -61,7 +68,7 @@ func Health() error {
 }
 
 func hashPassword(password string) (string, error) {
-	bytes, err := bcrypt.GenerateFromPassword([]byte(password), 7)
+	bytes, err := bcrypt.GenerateFromPassword([]byte(password), 4)
 	return string(bytes), err
 }
 

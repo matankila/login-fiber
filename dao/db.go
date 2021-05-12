@@ -18,7 +18,7 @@ var (
 )
 
 type mongoDB struct {
-	Client *mongo.Client
+	DB *mongo.Database
 	sync.Once
 }
 
@@ -44,7 +44,7 @@ func New(uri string) (DB, chan struct{}) {
 			}
 		}()
 
-		m.Client = client
+		m.DB = client.Database("login")
 	})
 
 	return &m, done
@@ -56,8 +56,8 @@ func (m *mongoDB) Get(requestObj interface{}) (interface{}, error) {
 		return nil, error_lib.UnsupportedType
 	}
 
-	collection := m.Client.Database("login").Collection("users")
-	ctx, cancel := context.WithTimeout(context.Background(), 3*time.Second)
+	collection := m.DB.Collection("users")
+	ctx, cancel := context.WithTimeout(context.Background(), 1*time.Second)
 	defer cancel()
 	res := bson.M{}
 	err := collection.FindOne(ctx, bson.M{"_id": req.Id}).Decode(&res)
@@ -74,8 +74,8 @@ func (m *mongoDB) Set(requestObj interface{}) error {
 		return error_lib.UnsupportedType
 	}
 
-	collection := m.Client.Database("login").Collection("users")
-	ctx, cancel := context.WithTimeout(context.Background(), 3*time.Second)
+	collection := m.DB.Collection("users")
+	ctx, cancel := context.WithTimeout(context.Background(), 1*time.Second)
 	defer cancel()
 	_, err := collection.InsertOne(ctx, req)
 	if err != nil {
@@ -86,9 +86,9 @@ func (m *mongoDB) Set(requestObj interface{}) error {
 }
 
 func (m *mongoDB) Ping() (bool, error) {
-	ctx, cancel := context.WithTimeout(context.Background(), 3*time.Second)
+	ctx, cancel := context.WithTimeout(context.Background(), 1*time.Second)
 	defer cancel()
-	if err := m.Client.Ping(ctx, readpref.Primary()); err != nil {
+	if err := m.DB.Client().Ping(ctx, readpref.Primary()); err != nil {
 		return false, err
 	}
 

@@ -8,7 +8,7 @@ import (
 	"go.uber.org/zap"
 )
 
-func InitApi(f *fiber.App, c Controller) {
+func InitApi(f *fiber.App, c ApiController) {
 
 	// middleware
 	f.Use(service.NewUuidMid())

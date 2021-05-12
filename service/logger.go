@@ -55,7 +55,7 @@ func initLogger(loggerName string) *zap.Logger {
 
 // it inits the logger factory
 // this function returns a channel, you must close before the program finishes.
-func InitFactory() chan struct{} {
+func InitLoggerFactory() chan struct{} {
 	l[Default] = initLogger(global.LOGGER_NAME)
 	l[Health] = initLogger(global.HEALTH_LOGGER_NAME)
 	// waits for channel to be closed and sync all loggers
