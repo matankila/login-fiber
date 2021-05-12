@@ -6,12 +6,12 @@ import (
 )
 
 func TestInitFactory(t *testing.T) {
-	c := InitFactory()
+	c := InitLoggerFactory()
 	assert.NotNil(t, c)
 }
 
 func TestGetLogger(t *testing.T) {
-	InitFactory()
+	InitLoggerFactory()
 	l := GetLogger(Default)
 	assert.NotNil(t, l)
 }

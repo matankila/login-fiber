@@ -5,16 +5,17 @@ import (
 	error_lib "com.poalim.bank.hackathon.login-fiber/global/error"
 	"com.poalim.bank.hackathon.login-fiber/model"
 	"com.poalim.bank.hackathon.login-fiber/service"
-	"golang.org/x/crypto/bcrypt"
 )
 
 type Controller struct {
-	db dao.DB
+	db   dao.DB
+	hash service.Bycrypt
 }
 
-func NewContoller(db dao.DB) Controller {
+func NewContoller(db dao.DB, hash service.Bycrypt) Controller {
 	return Controller{
-		db: db,
+		db:   db,
+		hash: hash,
 	}
 }
 
@@ -26,7 +27,7 @@ func (c Controller) Login(request model.LoginRequest) error {
 		return err
 	}
 
-	if ok := checkPasswordHash(account.Password, encPassword.(string)); !ok {
+	if ok := c.hash.CheckPasswordHash(account.Password, encPassword.(string)); !ok {
 		return error_lib.IncorrectPassword
 	}
 
@@ -34,7 +35,10 @@ func (c Controller) Login(request model.LoginRequest) error {
 }
 
 func (c Controller) Register(request model.RegisterRequest) error {
-	account, err := registerRequestToAccountData(request)
+	var err error
+	account := registerRequestToAccountData(request)
+
+	account.Password, err = c.hash.HashPassword(account.Password)
 	if err != nil {
 		return err
 	}
@@ -67,16 +71,6 @@ func (c Controller) Health() error {
 	return nil
 }
 
-func hashPassword(password string) (string, error) {
-	bytes, err := bcrypt.GenerateFromPassword([]byte(password), 4)
-	return string(bytes), err
-}
-
-func checkPasswordHash(password, hash string) bool {
-	err := bcrypt.CompareHashAndPassword([]byte(hash), []byte(password))
-	return err == nil
-}
-
 func loginRequestToAccountData(request model.LoginRequest) model.AccountData {
 	return model.AccountData{
 		Id:       request.BankNumber + "-" + request.AccountId,
@@ -84,14 +78,9 @@ func loginRequestToAccountData(request model.LoginRequest) model.AccountData {
 	}
 }
 
-func registerRequestToAccountData(request model.RegisterRequest) (model.AccountData, error) {
-	h, err := hashPassword(request.Password)
-	if err != nil {
-		return model.AccountData{}, err
-	}
-
+func registerRequestToAccountData(request model.RegisterRequest) model.AccountData {
 	return model.AccountData{
 		Id:       request.BankNumber + "-" + request.AccountId,
-		Password: h,
-	}, nil
+		Password: request.Password,
+	}
 }

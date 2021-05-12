@@ -9,6 +9,7 @@ require (
 	github.com/dgrijalva/jwt-go v3.2.0+incompatible
 	github.com/go-openapi/swag v0.19.15 // indirect
 	github.com/gofiber/fiber/v2 v2.8.0
+	github.com/golang/mock v1.5.0
 	github.com/google/uuid v1.2.0
 	github.com/klauspost/compress v1.12.2 // indirect
 	github.com/stretchr/testify v1.7.0

@@ -1,17 +1,15 @@
 package controller
 
 import (
+	"com.poalim.bank.hackathon.login-fiber/mock_dao"
+	"com.poalim.bank.hackathon.login-fiber/mock_service"
 	"com.poalim.bank.hackathon.login-fiber/model"
 	"com.poalim.bank.hackathon.login-fiber/service"
+	"errors"
+	"github.com/golang/mock/gomock"
 	"github.com/stretchr/testify/assert"
 	"testing"
 )
-
-func TestHashPassword(t *testing.T) {
-	res, err := hashPassword("matan")
-	assert.Nil(t, err)
-	assert.True(t, checkPasswordHash("matan", res))
-}
 
 func TestLoginRequestToAccountData(t *testing.T) {
 	request := model.LoginRequest{
@@ -22,6 +20,7 @@ func TestLoginRequestToAccountData(t *testing.T) {
 
 	res := loginRequestToAccountData(request)
 	assert.Equal(t, res.Id, "1234-1234")
+	assert.Equal(t, res.Password, "1234")
 }
 
 func TestRegisterRequestToAccountData(t *testing.T) {
@@ -31,23 +30,38 @@ func TestRegisterRequestToAccountData(t *testing.T) {
 		Password:   "1234",
 	}
 
-	res, err := registerRequestToAccountData(request)
-	assert.Nil(t, err)
+	res := registerRequestToAccountData(request)
 	assert.Equal(t, res.Id, "1234-1234")
-	assert.True(t, checkPasswordHash("1234", res.Password))
+	assert.Equal(t, res.Password, "1234")
 }
 
 func TestHealth(t *testing.T) {
-	err := Health()
+	ctrl := gomock.NewController(t)
+	defer ctrl.Finish()
+	db := mock_dao.NewMockDB(ctrl)
+	hash := mock_service.NewMockBycrypt(ctrl)
+	db.EXPECT().Ping().Return(true, nil)
+	c := NewContoller(db, hash)
+	err := c.Health()
 	assert.Nil(t, err)
 }
 
 func TestValidate(t *testing.T) {
-	err := Validate("x")
+	ctrl := gomock.NewController(t)
+	defer ctrl.Finish()
+	db := mock_dao.NewMockDB(ctrl)
+	hash := mock_service.NewMockBycrypt(ctrl)
+	c := NewContoller(db, hash)
+	err := c.Validate("x")
 	assert.Error(t, err)
 }
 
 func TestValidate2(t *testing.T) {
+	ctrl := gomock.NewController(t)
+	defer ctrl.Finish()
+	db := mock_dao.NewMockDB(ctrl)
+	hash := mock_service.NewMockBycrypt(ctrl)
+	c := NewContoller(db, hash)
 	l := model.LoginRequest{
 		BankNumber: "",
 		AccountId:  "",
@@ -55,7 +69,7 @@ func TestValidate2(t *testing.T) {
 	}
 	j := service.NewJwtWrapper()
 	jwt, _ := j.GenerateToken(l)
-	err := Validate(jwt)
+	err := c.Validate(jwt)
 	assert.Nil(t, err)
 }
 
@@ -65,8 +79,33 @@ func TestLogin(t *testing.T) {
 		AccountId:  "m",
 		Password:   "m",
 	}
-	err := Login(r)
+	account := loginRequestToAccountData(r)
+	ctrl := gomock.NewController(t)
+	defer ctrl.Finish()
+	hash := mock_service.NewMockBycrypt(ctrl)
+	db := mock_dao.NewMockDB(ctrl)
+	db.EXPECT().Get(account).Return(nil, errors.New("not found"))
+	c := NewContoller(db, hash)
+	err := c.Login(r)
 	assert.Error(t, err)
+}
+
+func TestLogin2(t *testing.T) {
+	r := model.LoginRequest{
+		BankNumber: "m",
+		AccountId:  "m",
+		Password:   "m",
+	}
+	account := loginRequestToAccountData(r)
+	ctrl := gomock.NewController(t)
+	defer ctrl.Finish()
+	hash := mock_service.NewMockBycrypt(ctrl)
+	db := mock_dao.NewMockDB(ctrl)
+	db.EXPECT().Get(account).Return("***", nil)
+	hash.EXPECT().CheckPasswordHash(account.Password, "***").Return(true)
+	c := NewContoller(db, hash)
+	err := c.Login(r)
+	assert.Nil(t, err)
 }
 
 func TestRegister(t *testing.T) {
@@ -75,16 +114,36 @@ func TestRegister(t *testing.T) {
 		AccountId:  "m",
 		Password:   "m",
 	}
-	err := Register(r)
+	account := registerRequestToAccountData(r)
+	ctrl := gomock.NewController(t)
+	defer ctrl.Finish()
+	hash := mock_service.NewMockBycrypt(ctrl)
+	db := mock_dao.NewMockDB(ctrl)
+	hash.EXPECT().HashPassword(account.Password).Return("***", nil)
+	account.Password = "***"
+	db.EXPECT().Get(account).Return(nil, errors.New("not found"))
+	db.EXPECT().Set(account).Return(nil)
+	c := NewContoller(db, hash)
+	err := c.Register(r)
 	assert.Nil(t, err)
 }
 
 func TestRegister2(t *testing.T) {
+
 	r := model.RegisterRequest{
 		BankNumber: "m",
 		AccountId:  "m",
 		Password:   "m",
 	}
-	err := Register(r)
+	account := registerRequestToAccountData(r)
+	ctrl := gomock.NewController(t)
+	defer ctrl.Finish()
+	hash := mock_service.NewMockBycrypt(ctrl)
+	db := mock_dao.NewMockDB(ctrl)
+	hash.EXPECT().HashPassword(account.Password).Return("***", nil)
+	account.Password = "***"
+	db.EXPECT().Get(account).Return(nil, nil)
+	c := NewContoller(db, hash)
+	err := c.Register(r)
 	assert.Error(t, err)
 }

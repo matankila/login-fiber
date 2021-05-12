@@ -34,7 +34,8 @@ func init() {
 // @BasePath /api
 func main() {
 	app := fiber.New(api.ErrorHandler(service.GetLogger(service.Default)))
-	ctrlr := controller.NewContoller(db)
+	h := service.NewHash()
+	ctrlr := controller.NewContoller(db, h)
 	c := api.NewApiController(ctrlr)
 	api.InitApi(app, c)
 	if err := app.Listen(":8080"); err != nil {
