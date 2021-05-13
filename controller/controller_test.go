@@ -41,7 +41,7 @@ func TestHealth(t *testing.T) {
 	db := mock_dao.NewMockDB(ctrl)
 	hash := mock_service.NewMockBycrypt(ctrl)
 	db.EXPECT().Ping().Return(true, nil)
-	c := NewContoller(db, hash)
+	c := NewController(db, hash)
 	err := c.Health()
 	assert.Nil(t, err)
 }
@@ -51,7 +51,7 @@ func TestValidate(t *testing.T) {
 	defer ctrl.Finish()
 	db := mock_dao.NewMockDB(ctrl)
 	hash := mock_service.NewMockBycrypt(ctrl)
-	c := NewContoller(db, hash)
+	c := NewController(db, hash)
 	err := c.Validate("x")
 	assert.Error(t, err)
 }
@@ -61,7 +61,7 @@ func TestValidate2(t *testing.T) {
 	defer ctrl.Finish()
 	db := mock_dao.NewMockDB(ctrl)
 	hash := mock_service.NewMockBycrypt(ctrl)
-	c := NewContoller(db, hash)
+	c := NewController(db, hash)
 	l := model.LoginRequest{
 		BankNumber: "",
 		AccountId:  "",
@@ -85,7 +85,7 @@ func TestLogin(t *testing.T) {
 	hash := mock_service.NewMockBycrypt(ctrl)
 	db := mock_dao.NewMockDB(ctrl)
 	db.EXPECT().Get(account).Return(nil, errors.New("not found"))
-	c := NewContoller(db, hash)
+	c := NewController(db, hash)
 	err := c.Login(r)
 	assert.Error(t, err)
 }
@@ -103,7 +103,7 @@ func TestLogin2(t *testing.T) {
 	db := mock_dao.NewMockDB(ctrl)
 	db.EXPECT().Get(account).Return("***", nil)
 	hash.EXPECT().CheckPasswordHash(account.Password, "***").Return(true)
-	c := NewContoller(db, hash)
+	c := NewController(db, hash)
 	err := c.Login(r)
 	assert.Nil(t, err)
 }
@@ -123,7 +123,7 @@ func TestRegister(t *testing.T) {
 	account.Password = "***"
 	db.EXPECT().Get(account).Return(nil, errors.New("not found"))
 	db.EXPECT().Set(account).Return(nil)
-	c := NewContoller(db, hash)
+	c := NewController(db, hash)
 	err := c.Register(r)
 	assert.Nil(t, err)
 }
@@ -143,7 +143,7 @@ func TestRegister2(t *testing.T) {
 	hash.EXPECT().HashPassword(account.Password).Return("***", nil)
 	account.Password = "***"
 	db.EXPECT().Get(account).Return(nil, nil)
-	c := NewContoller(db, hash)
+	c := NewController(db, hash)
 	err := c.Register(r)
 	assert.Error(t, err)
 }

@@ -12,7 +12,7 @@ type Controller struct {
 	hash service.Bycrypt
 }
 
-func NewContoller(db dao.DB, hash service.Bycrypt) Controller {
+func NewController(db dao.DB, hash service.Bycrypt) Controller {
 	return Controller{
 		db:   db,
 		hash: hash,

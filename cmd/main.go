@@ -35,7 +35,7 @@ func init() {
 func main() {
 	app := fiber.New(api.ErrorHandler(service.GetLogger(service.Default)))
 	h := service.NewHash()
-	ctrlr := controller.NewContoller(db, h)
+	ctrlr := controller.NewController(db, h)
 	c := api.NewApiController(ctrlr)
 	api.InitApi(app, c)
 	if err := app.Listen(":8080"); err != nil {
