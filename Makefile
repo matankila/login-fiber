@@ -12,7 +12,7 @@ build:
 	export CGO_ENABLED=0
 	export GOOS=linux
 	export GOARCH=amd64
-	go build -ldflags='-w -s -extldflags "-static"' -a -o /go/bin/main ./cmd/main.go -local=$(LOCAL)
+	go build -ldflags='-w -s -extldflags "-static"' -a -o /go/bin/main ./cmd/main.go
 
 # team2registry.azurecr.io
 # make cicd USER=* PASSWORD=* HOST=* CONTAINER_REGISTRY=*

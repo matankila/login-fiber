@@ -17,10 +17,11 @@ var (
 	done  chan struct{}
 	done2 chan struct{}
 	db    dao.DB
-	local = flag.Bool("local", true, "host url")
+	local = flag.Bool("local", true, "is local")
 )
 
 func init() {
+	flag.Parse()
 	done2 = service.InitLoggerFactory()
 	if !(*local) {
 		db, done = dao.New(global.URI)

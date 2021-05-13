@@ -58,5 +58,5 @@ COPY --from=builder /go/bin/main /go/bin/main
 USER appuser:appuser
 
 # Run the hello binary.
-ENTRYPOINT ["/go/bin/main"]
+ENTRYPOINT ["/go/bin/main", "-local=false"]
 EXPOSE 8080
