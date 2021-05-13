@@ -13,12 +13,13 @@ import (
 )
 
 var (
-	done chan struct{}
-	db   dao.DB
+	done  chan struct{}
+	done2 chan struct{}
+	db    dao.DB
 )
 
 func init() {
-	service.InitLoggerFactory()
+	done2 = service.InitLoggerFactory()
 	db, done = dao.New(global.URI)
 }
 
@@ -40,7 +41,8 @@ func main() {
 	api.InitApi(app, c)
 	if err := app.Listen(":8080"); err != nil {
 		close(done)
-		time.Sleep(2 * time.Second)
+		close(done2)
+		time.Sleep(3 * time.Second)
 		panic(err)
 	}
 }
