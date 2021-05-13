@@ -6,6 +6,7 @@ import (
 	"com.poalim.bank.hackathon.login-fiber/dao"
 	"com.poalim.bank.hackathon.login-fiber/global"
 	"com.poalim.bank.hackathon.login-fiber/service"
+	"flag"
 	"github.com/gofiber/fiber/v2"
 	"time"
 
@@ -16,11 +17,16 @@ var (
 	done  chan struct{}
 	done2 chan struct{}
 	db    dao.DB
+	local = flag.Bool("local", true, "host url")
 )
 
 func init() {
 	done2 = service.InitLoggerFactory()
-	db, done = dao.New(global.URI)
+	if !(*local) {
+		db, done = dao.New(global.URI)
+	} else {
+		db, done = dao.NewLocal()
+	}
 }
 
 // @title Login
@@ -40,7 +46,9 @@ func main() {
 	c := api.NewApiController(ctrlr)
 	api.InitApi(app, c)
 	if err := app.Listen(":8080"); err != nil {
-		close(done)
+		if !(*local) {
+			close(done)
+		}
 		close(done2)
 		time.Sleep(3 * time.Second)
 		panic(err)

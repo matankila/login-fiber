@@ -35,7 +35,7 @@ RUN go get -u github.com/swaggo/swag/cmd/swag
 RUN swag init -g cmd/main.go
 
 # Build the binary
-RUN make build
+RUN make build LOCAL=false
 
 # Run Test & return coverage %
 RUN make test
